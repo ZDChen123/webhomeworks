@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>ForeCast</title>
+        
+ <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <style type="text/css">
+            td{
+                padding-left: 30px;
+            }
+            tr{
+                background-color: white;
+            }
+            td.nowleft{
+                width:50%;
+            }
+            td.td1{
+                height:40px;
+                color:white;
+            }
+            .image1{
+                
+                height:120px;
+            }
+            tr.tr1{
+                background-color: #FF9999;
+            }
+            tr.tr2{
+                height: 50px;
+                background-color: #F8F8F8;
+            }
+            tr.tr3{
+                height: 50px;
+                background-color: #FFCCCC;
+            }
+            .nowtable{
+                width:100%;
+                padding-left: 30px;
+                border: 0px;
+                margin: 0px;
+            }
+            .degreeicon{
+                font-size: 15px;
+                position:relative;
+                margin-top: 3px;
+                line-height: 15px;
+            }
+            p.degreenum{
+                font-size: 40px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .templow{
+                color: blue;
+            }
+            .temphigh{
+                color:cadetblue;
+            }
+            .line1{
+                color: black;
+            }
+            th{
+                width:20%;
+            }
+            .tablehead2{
+                color:white;
+                background-color: #3378aa;
+            }
+            .table2tr{
+                background-color: white;
+                border: 1px solid gainsboro;
+                height: 50px;
+            }
+            .nexthoursimage{
+                height: 35px;
+            }
+            th{
+                height: 30px;}
+            .tablehead2{
+                width: 100%;
+            }
+        </style>
+        <script>
+            $().ready(function(){
+                $("#testing").hide();
+                $("#searchbutton").click(function(){
+                    var street = $("#street").val();
+                    street = street.replace(" ","+");
+                    var city = $("#city").val();
+                    city = city.replace(" ","+");
+                    var state = $("#state").val();
+                    
+                    var degree = $("input:radio:checked").val();
+                    
+                    $.ajax({
+                        url:'hw8.php',
+                        data:{
+                            street: $("#street").val(),
+                            city: $("#city").val(),
+                            state: $("#state").val(),
+                            degree: degree
+                        },
+                        type:'GET',
+                     success:function(result){
+                  
+                         var arr = JSON.parse(result);
+                         var summary=arr.currently.summary;
+                         var icon=arr["currently"]["icon"];
+
+                         var temperature=arr["currently"]["temperature"];
+temperature=Math.round(temperature=temperature,0);
+                         var precipitation=arr["currently"]["precipIntensity"];
+                         if(degree=="Celsius"){
+            precipitation=precipitation*0.04;}
+                         var prec="";
+                         if(precipitation<0.002)
+            prec="None";
+        else if((precipitation>=0.002) && (precipitation<0.017))
+            prec = "Very Light";
+        else if((precipitation>=0.017) && (precipitation<0.1))
+            prec = "Light";
+        else if((precipitation>=0.1) && (precipitation<0.4))
+            prec = "Moderate";
+        else
+            prec = "Heavy";
+                         var chance=arr["currently"]["precipProbability"];
+
+                         var wind=arr["currently"]["windSpeed"];
+                         
+                         var dewpoint=arr["currently"]["dewPoint"];
+                         var humidity=arr["currently"]["humidity"];
+                         var visibility=arr["currently"]["visibility"];
+
+                         var sunrise=arr["daily"]["data"][0]["sunriseTime"];
+                         var sunset=arr["daily"]["data"][0]["sunsetTime"];
+                         var timezone=arr["timezone"];
+                var date1=new Date();
+                         var date2=new Date();
+                         date1.setTime(sunrise*1000);
+                         date2.setTime(sunset*1000);
+                         var h1=date1.getHours();
+                         var m1=date1.getMinutes();
+                         var h2=date2.getHours();
+                         var m2=date2.getMinutes();
+                         var ampm1="";
+                         var ampm2="";
+                        if(h1 >12){
+                            h1=h1%12;
+                            ampm1="PM";
+                        }
+                         else
+                         {
+                             ampm1="AM";
+                         }
+                        if(h2 >12){
+                            h2=h2%12;
+                            ampm2="PM";
+                        }
+                         else
+                         {
+                             ampm2="AM";
+                         }
+                         sunrise=h1+":"+m1+" "+ampm1;
+                         sunset=h2+":"+m2+" "+ampm2;
+                         var image="";
+                         var title="";
+                         if(icon == "clear-day"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/clear.png";
+            title="Clear";}
+        else if(icon == "clear-night"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/clear_night.png";
+            title="Clear";}
+        else if(icon == "rain"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/rain.png";
+            title="Rain";}
+        else if(icon == "snow"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/snow.png";
+            title="Snow";}
+        else if(icon == "sleet"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/sleet.png";
+            title="Sleet";}
+        else if(icon == "wind"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/wind.png";
+            title="Wind";}
+        else if(icon == "fog"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/fog.png";
+            title="Fog";}
+        else if(icon == "cloudy"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/cloudy.png";
+            title="Cloudy";}
+        else if(icon == "partly-cloudy-day"){
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/cloud_day.png";
+            title="Cloud";}
+        else{
+            image="http://cs-server.usc.edu:45678/hw/hw8/images/cloud_night.png";
+            title="Cloud";}
+                         var prec="";
+                      if(precipitation<0.002)
+            prec="None";
+        else if((precipitation>=0.002) && (precipitation<0.017))
+            prec = "Very Light";
+        else if((precipitation>=0.017) && (precipitation<0.1))
+            prec = "Light";
+        else if((precipitation>=0.1) && (precipitation<0.4))
+            prec = "Moderate";
+        else
+            prec = "Heavy";  
+                         var tempmin=arr.daily.data[0].temperatureMin;
+                         tempmin=Math.round(tempmin,0);
+                         var tempmax=arr.daily.data[0].temperatureMax;
+                         tempmax=Math.round(tempmax,0);
+                         var timeh=[];
+                         var timeh_hour=[];
+                         var timeh_min=[];
+                         var timeh_ampm=[];
+                         var iconh=[];
+                         var cloudh=[];
+                         var temph=[];
+                         var windh=[];
+                         var humidityh=[];
+                         var visibilityh=[];
+                         var pressureh=[];
+                         var imageh=[];
+                         var titleh=[];
+                         for(var i=0;i<24;i++)
+                         {            
+                             timeh[i]=arr.hourly.data[i].time;
+                             var date=new Date();
+                         date.setTime(timeh[i]*1000);
+                         timeh_hour[i]=date.getHours();
+                         timeh_min[i]=date.getMinutes();
+                        if(timeh_hour[i]>12){
+                            timeh_hour[i]=timeh_hour[i]-12;
+                            timeh_ampm[i]="PM";
+                        }
+                         else
+                         {
+                             timeh_ampm[i]="AM";
+                         }
+                         timeh[i]=timeh_hour[i]+":"+timeh_min[i]+" "+timeh_ampm[i];
+                             iconh[i]=arr.hourly.data[i].icon; 
+                         if(iconh[i] == "clear-day"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/clear.png";
+            titleh[i]="Clear";}
+        else if(iconh[i] == "clear-night"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/clear_night.png";
+            titleh[i]="Clear";}
+        else if(iconh[i] == "rain"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/rain.png";
+            titleh[i]="Rain";}
+        else if(iconh[i] == "snow"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/snow.png";
+            titleh[i]="Snow";}
+        else if(iconh[i] == "sleet"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/sleet.png";
+            titleh[i]="Sleet";}
+        else if(iconh[i] == "wind"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/wind.png";
+            titleh[i]="Wind";}
+        else if(iconh[i] == "fog"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/fog.png";
+            titleh[i]="Fog";}
+        else if(iconh[i] == "cloudy"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/cloudy.png";
+            titleh[i]="Cloudy";}
+        else if(iconh[i] == "partly-cloudy-day"){
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/cloud_day.png";
+            titleh[i]="Cloud";}
+        else{
+            imageh[i]="http://cs-server.usc.edu:45678/hw/hw8/images/cloud_night.png";
+            titleh[i]="Cloud";}
+                             cloudh[i]=arr.hourly.data[i].cloudCover;
+                             cloudh[i]=Math.round(cloudh[i],2)*100;
+                             temph[i]=arr.hourly.data[i].temperature;
+                             windh[i]=arr.hourly.data[i].windSpeed;
+                             humidityh[i]=arr.hourly.data[i].humidity;
+                             visibilityh[i]=arr.hourly.data[i].visibility;
+                             pressureh[i]=arr.hourly.data[i].pressure;
+                         }
+                        var timed=[];
+                         var dayd=[];
+                         var monthd=[];
+                         var dated=[];
+                         var icond=[];
+                         var tempmind=[];
+                         var tempmaxd=[];
+                         var sunrised=[];
+                         var sunsetd=[];
+                         var windd=[];
+                         var humidityd=[];
+                         var visibilityd=[];
+                         var pressured=[];
+                         for(var i=1;i<7;i++)
+                         {            
+                             timed[i]=arr.daily.data[i].time;
+                         var date=new Date();
+                         date.setTime(timed[i]*1000);
+                         dayd[i]=date.getDay();
+                         monthd[i]=date.getMonth();
+                         dated[i]=date.getDate();    icond[i]=arr.daily.data[i].icon;
+                         tempmind[i]=arr.daily.data[i].temperatureMin;
+                             tempmaxd[i]=arr.daily.data[i].temperatureMax;
+                             sunrised[i]=arr.daily.data[i].sunriseTime;
+                             sunsetd[i]=arr.daily.data[i].sunsetTime;
+                         var date1=new Date();
+                         var date2=new Date();
+                         date1.setTime(sunrised[i]*1000);
+                         date2.setTime(sunsetd[i]*1000);
+                         var h1=date1.getHours();
+                         var m1=date1.getMinutes();
+                         var h2=date2.getHours();
+                         var m2=date2.getMinutes();
+                         var ampm1="";
+                         var ampm2="";
+                        if(h1 >12){
+                            h1=h1%12;
+                            ampm1="PM";
+                        }
+                         else
+                         {
+                             ampm1="AM";
+                         }
+                        if(h2 >12){
+                            h2=h2%12;
+                            ampm2="PM";
+                        }
+                         else
+                         {
+                             ampm2="AM";
+                         }
+                        sunrised[i]=h1+" "+m1+" "+ampm1;
+                             sunsetd[i]=h2+" "+m2+" "+ampm2;
+                             
+ windd[i]=arr.daily.data[i].windSpeed;
+                             humidityd[i]=arr.daily.data[i].humidity;
+                             visibilityd[i]=arr.daily.data[i].visibility;
+                             pressured[i]=arr.daily.data[i].pressure;
+                         }
+                         var city_string=$('#city').val();
+                         $("#nowicon").html("<img class='image1' src='"+image+"'>");
+                         $("#nowsummary").html("<p>"+summary+" in "+city_string+", "+state+"</p>");
+                         var degreeicon="";
+                         if(degree=="Celsius")
+                         {
+                             degreeicon="&deg C";
+                         }
+                         else{
+                             degreeicon="&deg F";
+                         }
+                         $("#nowtemp").html("<P class='degreenum'>"+temperature+"<span class='degreeicon'>"+degreeicon+"</span></p>");
+                         $("#nowlowhigh").html("<span class='templow'>L: "+tempmin+"&deg </span><span class='line1'>|</span><span class='temphigh'> H: "+tempmax+"&deg</span>");
+                         $("#nowprec").html(prec);
+                         $("#nowchance").html(chance*100+" %");
+                         var windunit="";
+                         if(degree=="Celsius")
+                             windunit="m/s";
+                         else
+                             windunit="mph";
+                         $("#nowwind").html(wind+" "+windunit);
+                         $("#nowdew").html(dewpoint+" "+degreeicon);
+                         
+                         $("#nowhumidity").html(humidity*100+" %");
+                         var visibilityunit="";
+                         if(degree=="Celsius")
+                         {
+                             visibilityunit=" km";
+                         }
+                         else
+                             visibilityunit=" mi";
+                         $("#nowvisibility").html(visibility+" "+visibilityunit);
+                         $("#nowsunrise").html(sunrise);
+                         $("#nowsunset").html(sunset);
+                         
+                         $("#nexthours").empty();
+                         $("#nexthours").html("<tr class='tablehead2'><th>Time</th><th>Summary</th><th>Cloud Cover</th><th>Temp "+degreeicon+"</th><th>View Details</th></tr>");
+                         for(var i=0;i<24;i++)
+                         {
+                             $("#nexthours").append("<tr class='table2tr'><td>"+timeh[i]+"</td><td><img class='nexthoursimage' src='"+imageh[i]+"'></td><td>"+cloudh[i]+" %</td><td>"+temph[i]+"</td><td><a  data-toggle='collapse' href='#detail"+i+"'><span class='glyphicon glyphicon-plus'></span></a></td></tr><tr  class='collapse'  id='detail"+i+"'><td  colspan='5'><table><tr><th class='th2'>Wind</th><th class='th2'>Humidity</th><th class='th2'>Visibility</th><th class='th2'>Pressure</th></tr><tr><td>"+windh[i]+" "+windunit+"</td><td>"+humidityh[i]*100+"%</td><td>"+visibilityh[i]+visibilityunit+"</td><td>"+pressureh[i]+"mb</td></tr></table></td></tr>");
+                            
+                         }
+                         
+                         
+                         
+                         $("#testing").show();
+                         
+                         
+                         
+                         
+                         
+                         
+/*  
+                         $("#testing").html(result);
+                         var html="";
+                         html+="<ul class='nav nav-pills'><li class='active'><a data-toggle='pill' href='#home'>Right Now</a></li><li><a data-toggle='pill' href='#menu1'>Next 24 Hours</a></li><li><a data-toggle='pill' href='#menu2'>Next 7 Days2</a></li></ul><div class='tab-content'><div id='home' class='tab-pane fade in active'>";
+                         
+                         html+="</div><div id='menu1' class='tab-pane fade'>";
+                         
+                         html+="</div><div id='menu2' class='tab-pane fade'>";
+                         
+                         html+="</div></div>";
+                         
+                         $("#testing").html(html);
+*/                         
+/*                       
+                         
+                    $("#testing").html("<ul class='nav nav-pills'><li class='active'><a data-toggle='pill' href='#home'>Right Now</a></li><li><a data-toggle='pill' href='#menu1'>Next 24 Hours</a></li><li><a data-toggle='pill' href='#menu2'>Next 7 Days2</a></li></ul><div class='tab-content'><div id='home' class='tab-pane fade in active'><h3>HOME</h3><p>Some content.</p></div><div id='menu1' class='tab-pane fade'><h3>Menu 1</h3><p>Some content in menu 1.</p></div><div id='menu2' class='tab-pane fade'><h3>Menu 2</h3><p>Some content in menu 2.</p></div></div>");  
+*/                        
+                         
+                         
+                          },
+                    error:function(){
+                      alert("11");
+                    }
+                    }); 
+                    });
+                  });
+        </script>
+    </head>
+    <body class="main" style="background-image:url('http://cs-server.usc.edu:45678/hw/hw8/images/bg.jpg')">
+
+        <div class="container-fluid" >
+        <h1 style="text-align:center">Forecast Search</h1>
+        <div style="margin: 30px;padding:15px;background-color: rgba(192,192,192, 0.4);height:150px;color:white">
+        <form class="form-inline" id="forecastform"role="form" style="width:100%;height:100%">
+        <div class="form-group">
+            <label for="street">Street Address:<span style="color:red">*</span></label><br>
+            <input type="text" class="form-control" id="street" placeholder="Enter street address">
+        </div>
+        <div class="form-group">
+            <label for="city">City:<span style="color:red">*</span></label><br>
+            <input type="text" class="form-control" id="city" placeholder="Enter the city name">
+            </div>
+        <div class="form-group">
+            <label for="state">State:<span style="color:red">*</span></label><br>
+            <select name="state" id="state" class="form-control">
+                    <option>Select your state...</option>    
+                    <option value="AL"  >Alabama</option>
+                    <option value="AK"   >Alaska</option>
+                    <option value="AZ" >Arizona</option>
+                    <option value="AR" >Arkansas</option>
+                    <option value="CA"  >California</option>
+                    <option value="CO"  >Colorado</option>
+                    <option value="CT" >Connecticut</option>
+                    <option value="DE" >Delaware</option>
+                    <option value="DC" >District Of Columbia</option>
+                    <option value="FL" >Florida</option>
+                    <option value="GA" >Georgia</option>
+                    <option value="HI" >Hawaii</option>
+                    <option value="ID" >Idaho</option>
+                    <option value="IL"  >Illinois</option>
+                    <option value="IN" >Indiana</option>
+                    <option value="IA" >Iwoa</option>
+                    <option value="KS" >Kansas</option>
+                    <option value="KY" >Kentucky</option>
+                    <option value="LA">Louisiana</option>
+                    <option value="ME" >Maine</option>
+                    <option value="MD" >Maryland</option>
+                    <option value="MA"  >MAssachusetts</option>
+                    <option value="MI" >Michigan</option>
+                    <option value="MN" >Minnesota</option>
+                    <option value="MS" >Mississippi</option>
+                    <option value="MO" >Missouri</option>
+                    <option value="MT">Montana</option>
+                    <option value="NE" >Nebraska</option>
+                    <option value="NV" >Nevada</option>
+                    <option value="NH" >New Hampshire</option>
+                    <option value="NJ" >New Jersey</option>
+                    <option value="NM" >New Mexico</option>
+                    <option value="NY" >New York</option>
+                    <option value="NC" >North Carolina</option>
+                    <option value="ND" >North Dakota</option>
+                    <option value="OH"  >Ohio</option>
+                    <option value="OK" >Oklahoma</option>
+                    <option value="OR" >Oregon</option>
+                    <option value="PA" >Pennsylvania</option>
+                    <option value="RI"  >Rhode Island</option>
+                    <option value="SC"  >South Carolina</option>
+                    <option value="SD"  >South Dakota</option>
+                    <option value="TN" >Tennessee</option>
+                    <option value="TX" >Texas</option>
+                    <option value="UT" >Utah</option>
+                    <option value="VT" >Vermont</option>
+                    <option value="VA" >Virginia</option>
+                    <option value="WA" >Washington</option>
+                    <option value="WV"  >West Virginia</option>
+                    <option value="WI" >Wisconsin</option>
+                    <option value="WY" >Wyoming</option>
+                    </select>
+        </div>
+        <div class="form-group">
+            <label for="degree">Degree:<span style="color:red" >*</span></label><br>
+            <input class="form-control" type="radio"  id="degree" name="degree" value="Fahrenheit" > Fahrenheit
+            <input class="form-control" type="radio" id="degree" name="degree" value="Celsius" > Celsius
+        </div>
+        <div class="form-group" style="float:right">
+        <button  id="searchbutton" type="button" style="width:100px; margin:10px" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>  Search</button>
+        <button  id="clearbutton" type="button" style="width:100px; margin:10px" class="btn btn-default"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>  Clear</button><br>
+        <p style="margin-left:10px">Powered by: <img style="width:100px" src="http://cs-server.usc.edu:45678/hw/hw8/images/forecast_logo.png"></p>
+        </div>
+        </form>
+        </div>
+        <div style="margin: 0px;padding:15px"class="row">
+            <div class="col-sm-6" id="testing">
+                <ul class='nav nav-pills'>
+                    <li class='active'>
+                        <a data-toggle='pill' href='#home'>
+                            Right Now
+                        </a>
+                    </li>
+                    <li>
+                        <a data-toggle='pill' href='#menu1'>
+                            Next 24 Hours
+                        </a>
+                    </li>
+                    <li>
+                        <a data-toggle='pill' href='#menu2'>
+                            Next 7 Days2
+                        </a>
+                    </li>
+                </ul>
+                <div class='tab-content'>
+                    <div id='home' class='tab-pane fade in active'>
+                        <table class="nowtable">
+                            <tr class="tr1">
+                                <td rowspan="3" id="nowicon" style="height:150px" align="center" class="nowleft"></td>
+                                <td class="td1" id="nowsummary" align="center"></td>
+                            </tr>
+                            <tr class="tr1">
+                                <td class="td1" id="nowtemp" align="center"></td>
+                            </tr>
+                            <tr class="tr1">
+                                <td class="td1" id="nowlowhigh" align="center">
+                                </td>
+                            </tr>
+                            <tr class="tr2">
+                                <td class="nowleft">Precipitation</td>
+                                <td id="nowprec"></td>
+                            </tr>
+                            <tr class="tr3">
+                                <td class="nowleft">Chance of Rain</td>
+                                <td id="nowchance"></td>
+                            </tr>
+                            <tr class="tr2">
+                                <td class="nowleft">Wind Speed</td>
+                                <td id="nowwind"></td>
+                            </tr>
+                            <tr class="tr3">
+                                <td class="nowleft">Dew Point</td>
+                                <td id="nowdew"></td>
+                            </tr>
+                            <tr class="tr2">
+                                <td class="nowleft">Humidity</td>
+                                <td id="nowhumidity"></td>
+                            </tr>
+                            <tr class="tr3">
+                                <td class="nowleft">Visibility</td>
+                                <td id="nowvisibility"></td>
+                            </tr>
+                            <tr class="tr2">
+                                <td class="nowleft">Sunrise</td>
+                                <td id="nowsunrise"></td>
+                            </tr>
+                            <tr class="tr3">
+                                <td class="nowleft">Sunset</td>
+                                <td id="nowsunset"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    
+                    <div id='menu1' class='tab-pane fade'>
+                       <table id="nexthours" style="width:100%">
+                        
+                        
+                       </table>
+                    </div>
+                    
+                    
+                    
+                    <div id='menu2' class='tab-pane fade'>
+                        <h3>Menu 2</h3>
+                        <p>Some content in menu 2.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">2222
+            </div>
+        </div>
+        </div>  
+    </body>
